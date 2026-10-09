@@ -1,6 +1,5 @@
-import { useEffect, useState, type FC } from 'react';
-import { X, Wifi, Check, Copy } from 'lucide-react';
-import { getNetworkIpApi } from '../services/storage';
+import { useState, type FC } from 'react';
+import { X, Check, Copy, QrCode } from 'lucide-react';
 
 interface NetworkModalProps {
   isOpen: boolean;
@@ -8,28 +7,26 @@ interface NetworkModalProps {
 }
 
 export const NetworkModal: FC<NetworkModalProps> = ({ isOpen, onClose }) => {
-  const [netInfo, setNetInfo] = useState<{ ip: string; port: number; url: string }>({
-    ip: '192.168.1.187',
-    port: 5173,
-    url: 'http://192.168.1.187:5173'
-  });
+
+  const [activeTestSlug, setActiveTestSlug] = useState('pedro-e-sofia');
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      getNetworkIpApi().then(info => setNetInfo(info));
-    }
-  }, [isOpen]);
+  const testEvents = [
+    { label: '💍 Pedro & Sofia', slug: 'pedro-e-sofia' },
+    { label: '🥂 Ana & João', slug: 'ana-e-joao' },
+    { label: '✨ Maria & Tiago', slug: 'maria-e-tiago' }
+  ];
 
   if (!isOpen) return null;
 
+  const currentUrl = `https://Cerqueira4618.github.io/StoreFoto/?evento=${activeTestSlug}`;
+  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(currentUrl)}&color=3C4637&bgcolor=ffffff`;
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(netInfo.url).catch(() => {});
+    navigator.clipboard.writeText(currentUrl).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
-  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(netInfo.url)}&color=090a0f&bgcolor=ffffff`;
 
   return (
     <div
@@ -37,7 +34,7 @@ export const NetworkModal: FC<NetworkModalProps> = ({ isOpen, onClose }) => {
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        background: 'rgba(0,0,0,0.75)',
+        background: 'rgba(42, 40, 36, 0.6)',
         backdropFilter: 'blur(10px)',
         display: 'flex',
         alignItems: 'center',
@@ -46,78 +43,168 @@ export const NetworkModal: FC<NetworkModalProps> = ({ isOpen, onClose }) => {
       }}
     >
       <div
-        className="glass-panel glass-card-gold animate-fade-in"
+        className="glass-panel animate-fade-in"
         style={{
           maxWidth: '420px',
           width: '100%',
-          padding: '24px',
+          padding: '28px 24px',
           borderRadius: '24px',
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '16px',
-          textAlign: 'center'
+          gap: '18px',
+          textAlign: 'center',
+          border: '1px solid var(--border-gold)'
         }}
       >
+        {/* Botão fechar */}
         <button
           onClick={onClose}
           style={{
             position: 'absolute',
             top: '16px',
             right: '16px',
-            background: 'rgba(128,128,128,0.15)',
+            background: 'rgba(107, 123, 94, 0.08)',
             border: 'none',
-            color: 'var(--text-primary)',
+            color: 'var(--text-secondary)',
             borderRadius: '50%',
             width: '32px',
             height: '32px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
           }}
         >
-          <X size={18} />
+          <X size={16} />
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-gold)' }}>
-          <Wifi size={24} />
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
-            Álbum Casamento no Telemóvel
+        {/* Título */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+          <QrCode size={22} color="var(--accent-gold)" style={{ marginBottom: '4px' }} />
+          <h3 style={{
+            fontSize: '1.25rem',
+            fontWeight: 600,
+            margin: 0,
+            color: 'var(--text-primary)',
+            fontFamily: 'var(--font-heading)'
+          }}>
+            QR Code do Casamento
           </h3>
+          <p style={{
+            fontSize: '0.8rem',
+            color: 'var(--text-secondary)',
+            margin: 0,
+            lineHeight: 1.5
+          }}>
+            Seleciona um casamento de teste:
+          </p>
         </div>
 
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
-          Aponta a câmara de qualquer telemóvel ligado à mesma rede Wi-Fi para enviar fotografias para este computador:
-        </p>
-
-        {/* Imagem do QR Code Gerado */}
-        <div style={{ background: '#fff', padding: '12px', borderRadius: '16px', boxShadow: 'var(--shadow-glow)' }}>
-          <img src={qrImageUrl} alt="QR Code Álbum Casamento" style={{ width: '180px', height: '180px', display: 'block' }} />
+        {/* Chips de Seleção de Casamento */}
+        <div style={{
+          display: 'flex',
+          gap: '6px',
+          overflowX: 'auto',
+          maxWidth: '100%',
+          paddingBottom: '4px',
+          justifyContent: 'center',
+          flexWrap: 'wrap'
+        }}>
+          {testEvents.map(evt => (
+            <button
+              key={evt.slug}
+              onClick={() => setActiveTestSlug(evt.slug)}
+              style={{
+                padding: '7px 14px',
+                borderRadius: '99px',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                border: activeTestSlug === evt.slug
+                  ? '1.5px solid var(--accent-gold)'
+                  : '1px solid var(--border-glass)',
+                background: activeTestSlug === evt.slug
+                  ? 'var(--accent-gold)'
+                  : 'rgba(107, 123, 94, 0.04)',
+                color: activeTestSlug === evt.slug
+                  ? '#FFFFFF'
+                  : 'var(--text-primary)',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {evt.label}
+            </button>
+          ))}
         </div>
 
-        {/* URL em texto e botão de copiar */}
-        <div style={{ width: '100%', background: 'rgba(0,0,0,0.08)', padding: '10px 14px', borderRadius: '12px', border: '1px solid var(--border-glass)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-gold)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {netInfo.url}
+        {/* QR Code Gerado */}
+        <div style={{
+          background: '#FFFFFF',
+          padding: '16px',
+          borderRadius: '18px',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+          border: '1px solid rgba(107, 123, 94, 0.1)'
+        }}>
+          <img
+            src={qrImageUrl}
+            alt="QR Code de Teste"
+            style={{ width: '180px', height: '180px', display: 'block' }}
+          />
+        </div>
+
+        {/* Botão de abrir este casamento no navegador */}
+        <a
+          href={currentUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-gold"
+          style={{
+            width: '100%',
+            padding: '12px',
+            fontSize: '0.88rem',
+            borderRadius: '14px',
+            textDecoration: 'none',
+            fontWeight: 600
+          }}
+        >
+          <span>Abrir Casamento de Teste →</span>
+        </a>
+
+        {/* URL em texto e copiar */}
+        <div style={{
+          width: '100%',
+          background: 'rgba(107, 123, 94, 0.04)',
+          padding: '10px 14px',
+          borderRadius: '12px',
+          border: '1px solid var(--border-glass)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '8px'
+        }}>
+          <span style={{
+            fontSize: '0.72rem',
+            fontWeight: 500,
+            color: 'var(--text-secondary)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}>
+            {currentUrl}
           </span>
           <button
             onClick={handleCopy}
             className="btn-glass"
-            style={{
-              padding: '6px 12px',
-              fontSize: '0.75rem'
-            }}
+            style={{ padding: '4px 10px', fontSize: '0.72rem', flexShrink: 0 }}
           >
-            {copied ? <Check size={14} color="#34d399" /> : <Copy size={14} />}
-            <span>{copied ? 'Copiado!' : 'Copiar'}</span>
+            {copied ? <Check size={14} color="var(--success-text)" /> : <Copy size={14} />}
+            <span>{copied ? 'Copiado' : 'Copiar'}</span>
           </button>
         </div>
-
-        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-          📁 Fotografias guardadas na pasta local <code>./uploads</code>.
-        </p>
 
       </div>
     </div>
