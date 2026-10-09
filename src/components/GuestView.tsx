@@ -1,18 +1,25 @@
 import { useState, useEffect, type FC, type ChangeEvent, type FormEvent } from 'react';
-import { Camera, Heart, Send, CheckCircle2 } from 'lucide-react';
+import { Heart, Check, ImagePlus, Camera, ArrowRight } from 'lucide-react';
 import type { PhotoSubmission } from '../types/album';
 import { fetchPhotosApi, uploadPhotoFileApi, likePhotoApi } from '../services/storage';
 
-/* ── Ícone SVG de ramo decorativo ── */
-const LeafDecor: FC<{ style?: React.CSSProperties }> = ({ style }) => (
-  <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
-    <path d="M30 55 C30 55 30 10 30 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-    <path d="M30 40 C24 37 18 30 16 22" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-    <path d="M16 22 C18 22 22 26 26 30" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" />
-    <path d="M30 28 C36 25 40 18 41 12" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-    <path d="M41 12 C39 14 35 20 32 24" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" />
-    <path d="M30 18 C26 16 23 12 22 7" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" />
-    <path d="M30 45 C34 43 37 39 38 34" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" />
+/* ── Desenho de Ramo de Oliveira Minimalista Line-Art (idêntico ao da imagem de referência) ── */
+const OliveBranchSketch: FC<{ size?: number; color?: string; style?: React.CSSProperties }> = ({
+  size = 64,
+  color = '#4A5646',
+  style
+}) => (
+  <svg width={size} height={size} viewBox="0 0 80 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
+    {/* Haste central */}
+    <path d="M40 90 C40 60 42 30 38 10" stroke={color} strokeWidth="1.2" strokeLinecap="round" />
+    {/* Folhas lado esquerdo */}
+    <path d="M39 75 C30 72 22 62 18 50 C24 53 34 60 39 70" stroke={color} strokeWidth="1" strokeLinejoin="round" />
+    <path d="M39 55 C28 50 18 38 15 24 C22 28 32 37 38 48" stroke={color} strokeWidth="1" strokeLinejoin="round" />
+    <path d="M39 35 C30 28 22 18 20 6 C26 12 34 22 38 30" stroke={color} strokeWidth="1" strokeLinejoin="round" />
+    {/* Folhas lado direito */}
+    <path d="M40 68 C50 63 58 52 62 40 C56 45 46 54 40 62" stroke={color} strokeWidth="1" strokeLinejoin="round" />
+    <path d="M39 48 C50 42 60 30 63 16 C57 22 47 33 40 42" stroke={color} strokeWidth="1" strokeLinejoin="round" />
+    <path d="M38 28 C46 20 54 12 55 2 C50 8 43 18 38 24" stroke={color} strokeWidth="1" strokeLinejoin="round" />
   </svg>
 );
 
@@ -24,7 +31,7 @@ export const GuestView: FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
 
-  // Imagens de teste rápido para desktop/simulação
+  // Imagens de teste rápido
   const sampleImages = [
     { label: '🥂 Brinde', url: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&auto=format&fit=crop' },
     { label: '💃 Festa', url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&auto=format&fit=crop' },
@@ -72,8 +79,6 @@ export const GuestView: FC = () => {
       setShowSuccessNotification(true);
       setSelectedFile(null);
       setPreviewUrl('');
-
-      setTimeout(() => setShowSuccessNotification(false), 4000);
     } catch (error) {
       console.error('Erro ao enviar foto:', error);
       alert('Erro ao enviar a fotografia.');
@@ -87,300 +92,312 @@ export const GuestView: FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: '520px', margin: '0 auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px 20px 40px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
-      {/* ═══ Secção Principal de Upload ═══ */}
-      <div
-        className="glass-panel"
-        style={{
-          padding: '28px 24px',
-          borderRadius: '24px',
-          textAlign: 'center',
-          position: 'relative',
-          overflow: 'hidden'
-        }}
-      >
-        {/* Decoração botânica de canto */}
-        <LeafDecor style={{
-          position: 'absolute',
-          top: '-6px',
-          right: '12px',
-          color: 'var(--accent-gold)',
-          opacity: 0.15,
-          transform: 'rotate(15deg)'
-        }} />
-        <LeafDecor style={{
-          position: 'absolute',
-          bottom: '-8px',
-          left: '8px',
-          color: 'var(--accent-gold)',
-          opacity: 0.1,
-          transform: 'rotate(-165deg) scaleX(-1)'
-        }} />
-
-        {/* Ícone e título da secção */}
-        <div style={{ marginBottom: '16px', position: 'relative', zIndex: 1 }}>
-          <div style={{ 
-            color: 'var(--accent-gold)', 
-            marginBottom: '10px',
-            display: 'flex',
-            justifyContent: 'center'
-          }}>
-            <LeafDecor style={{ width: '40px', height: '40px' }} />
-          </div>
-          <h2 style={{
-            fontSize: '1.5rem',
-            fontWeight: 600,
-            fontFamily: 'var(--font-heading)',
-            color: 'var(--text-primary)',
-            margin: 0,
-            lineHeight: 1.3
-          }}>
-            Partilha os teus<br />momentos
-          </h2>
-          <p style={{
-            fontSize: '0.85rem',
-            color: 'var(--text-secondary)',
-            marginTop: '8px',
-            lineHeight: 1.5
-          }}>
-            Seleciona as fotos que tiraste durante o casamento.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px', position: 'relative', zIndex: 1 }}>
-          
-          {previewUrl ? (
-            /* Visualização da foto selecionada */
-            <div style={{
-              position: 'relative',
-              width: '100%',
-              height: '300px',
-              borderRadius: '20px',
-              overflow: 'hidden',
-              border: '2px solid var(--border-gold)',
-              boxShadow: 'var(--shadow-card)'
-            }}>
-              <img src={previewUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <button
-                type="button"
-                onClick={() => { setPreviewUrl(''); setSelectedFile(null); }}
-                style={{
-                  position: 'absolute',
-                  top: '12px',
-                  right: '12px',
-                  background: 'rgba(255, 255, 255, 0.9)',
-                  color: 'var(--text-primary)',
-                  border: '1px solid var(--border-glass)',
-                  borderRadius: '50%',
-                  width: '36px',
-                  height: '36px',
-                  fontSize: '1rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backdropFilter: 'blur(8px)'
-                }}
-              >
-                ✕
-              </button>
-            </div>
-          ) : (
-            /* Botão Principal de Selecionar Fotografias */
-            <label
-              style={{
-                border: '2px dashed var(--border-gold)',
-                borderRadius: '20px',
-                padding: '36px 20px',
-                cursor: 'pointer',
-                background: 'rgba(107, 123, 94, 0.03)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '12px',
-                touchAction: 'manipulation',
-                transition: 'all 0.3s ease'
-              }}
-            >
-              <div
-                style={{
-                  width: '64px',
-                  height: '64px',
-                  borderRadius: '16px',
-                  background: 'rgba(107, 123, 94, 0.08)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <Camera size={28} color="var(--accent-gold)" strokeWidth={1.5} />
-              </div>
-
-              <div>
-                <span style={{
-                  fontSize: '0.95rem',
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                  display: 'block'
-                }}>
-                  Selecionar fotografias
-                </span>
-                <span style={{
-                  fontSize: '0.78rem',
-                  color: 'var(--text-muted)',
-                  marginTop: '4px',
-                  display: 'block'
-                }}>
-                  ou arrasta aqui
-                </span>
-                <span style={{
-                  fontSize: '0.7rem',
-                  color: 'var(--text-muted)',
-                  marginTop: '6px',
-                  display: 'block',
-                  opacity: 0.7
-                }}>
-                  JPG, PNG, HEIC • Máx. 50 MB por foto
-                </span>
-              </div>
-
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                style={{ display: 'none' }}
-              />
-            </label>
-          )}
-
-          {/* Testes Rápidos sem Ficheiro */}
-          {!previewUrl && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Teste:</span>
-              {sampleImages.map((s, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setPreviewUrl(s.url)}
-                  style={{
-                    padding: '4px 10px',
-                    borderRadius: '99px',
-                    fontSize: '0.72rem',
-                    background: 'rgba(107, 123, 94, 0.06)',
-                    border: '1px solid var(--border-glass)',
-                    color: 'var(--text-secondary)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  {s.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Botão de Submissão */}
-          {previewUrl && (
-            <button
-              type="submit"
-              disabled={isUploading}
-              className="btn-gold"
-              style={{
-                width: '100%',
-                padding: '14px',
-                fontSize: '0.95rem',
-                borderRadius: '14px',
-                fontWeight: 600,
-                letterSpacing: '0.01em'
-              }}
-            >
-              {isUploading ? (
-                <span>A enviar a foto...</span>
-              ) : (
-                <>
-                  <Send size={18} />
-                  <span>Enviar fotos</span>
-                </>
-              )}
-            </button>
-          )}
-
-        </form>
-      </div>
-
-      {/* ═══ Banner de Notificação de Sucesso ═══ */}
-      {showSuccessNotification && (
+      {/* ═══ ECRÃ DE SUCESSO ═══ */}
+      {showSuccessNotification ? (
         <div
           className="glass-panel animate-fade-in"
           style={{
-            padding: '20px 24px',
-            borderRadius: '20px',
-            border: '1px solid var(--success-border)',
-            background: 'var(--success-bg)',
+            padding: '48px 24px 36px',
+            borderRadius: '24px',
+            background: '#FFFFFF',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '12px',
-            textAlign: 'center'
+            textAlign: 'center',
+            gap: '20px',
+            border: '1px solid #EAE8E3',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
           }}
         >
-          <div style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            background: 'rgba(107, 123, 94, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <CheckCircle2 size={28} color="var(--success-text)" />
+          {/* Círculo verde claro com o checkmark */}
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              width: '72px',
+              height: '72px',
+              borderRadius: '50%',
+              background: '#E2E8DE',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Check size={36} color="#4A5646" strokeWidth={2.2} />
+            </div>
+
+            {/* Pontinhos festivos em volta */}
+            <div style={{ position: 'absolute', top: '-10px', left: '-12px', fontSize: '12px', opacity: 0.5 }}>✦</div>
+            <div style={{ position: 'absolute', top: '4px', right: '-14px', fontSize: '10px', opacity: 0.5 }}>•</div>
+            <div style={{ position: 'absolute', bottom: '-6px', left: '2px', fontSize: '10px', opacity: 0.5 }}>•</div>
+            <div style={{ position: 'absolute', bottom: '10px', right: '-10px', fontSize: '12px', opacity: 0.5 }}>✦</div>
           </div>
+
           <div>
-            <h4 style={{
-              fontSize: '1.15rem',
-              fontWeight: 600,
+            <h2 style={{
+              fontSize: '1.6rem',
+              fontWeight: 500,
+              fontFamily: 'var(--font-heading)',
+              color: '#2C2C2C',
               margin: 0,
-              color: 'var(--text-primary)',
-              fontFamily: 'var(--font-heading)'
+              lineHeight: 1.3
             }}>
-              Fotos enviadas com sucesso!
-            </h4>
+              Fotos enviadas<br />com sucesso!
+            </h2>
             <p style={{
-              fontSize: '0.82rem',
-              color: 'var(--text-secondary)',
-              margin: '6px 0 0 0',
-              lineHeight: 1.5
+              fontSize: '0.9rem',
+              color: '#777777',
+              margin: '12px 0 0 0',
+              lineHeight: 1.5,
+              fontWeight: 400
             }}>
-              Upload para o Álbum completo.
+              Obrigado por partilhares estes momentos connosco.
             </p>
           </div>
+
           <button
             onClick={() => setShowSuccessNotification(false)}
             className="btn-glass"
             style={{
-              padding: '10px 20px',
-              fontSize: '0.85rem',
-              borderRadius: '12px',
+              width: '100%',
+              maxWidth: '280px',
+              padding: '14px 20px',
+              fontSize: '0.9rem',
+              borderRadius: '99px',
+              marginTop: '8px',
+              borderColor: '#D0D6CB',
+              color: '#333333'
+            }}
+          >
+            <Camera size={18} color="#4A5646" />
+            <span>Enviar mais fotos</span>
+          </button>
+
+          {/* Desenho de Ramo na parte inferior */}
+          <div style={{ marginTop: '16px', opacity: 0.8 }}>
+            <OliveBranchSketch size={54} color="#6E7D6A" />
+          </div>
+
+          <button
+            onClick={() => {
+              setShowSuccessNotification(false);
+              const el = document.getElementById('gallery-feed');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#5E6E59',
+              fontSize: '0.9rem',
+              fontWeight: 500,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
               marginTop: '4px'
             }}
           >
-            <Camera size={16} />
-            <span>Enviar mais fotos</span>
+            <span>Ver galeria</span>
+            <ArrowRight size={16} />
           </button>
+        </div>
+      ) : (
+
+        /* ═══ FORMULÁRIO PRINCIPAL DE UPLOAD ═══ */
+        <div
+          className="glass-panel"
+          style={{
+            padding: '36px 24px 28px',
+            borderRadius: '24px',
+            background: '#FFFFFF',
+            textAlign: 'center',
+            border: '1px solid #EAE8E3',
+            boxShadow: '0 2px 14px rgba(0,0,0,0.03)'
+          }}
+        >
+          {/* Ramo de Oliveira Line-Art no topo */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+            <OliveBranchSketch size={68} color="#5E6E59" />
+          </div>
+
+          {/* Título e descrição idênticos à imagem */}
+          <div style={{ marginBottom: '24px' }}>
+            <h2 style={{
+              fontSize: '1.75rem',
+              fontWeight: 500,
+              fontFamily: 'var(--font-heading)',
+              color: '#2C2C2C',
+              margin: 0,
+              lineHeight: 1.25
+            }}>
+              Partilha os teus<br />momentos
+            </h2>
+            <p style={{
+              fontSize: '0.88rem',
+              color: '#777777',
+              marginTop: '10px',
+              lineHeight: 1.5,
+              fontWeight: 400
+            }}>
+              Seleciona as fotos que tiraste durante o casamento.<br />Podes enviar várias de uma vez.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            
+            {previewUrl ? (
+              /* Visualização da foto selecionada */
+              <div style={{
+                position: 'relative',
+                width: '100%',
+                height: '280px',
+                borderRadius: '18px',
+                overflow: 'hidden',
+                border: '1px solid #D4D9CE',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
+              }}>
+                <img src={previewUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <button
+                  type="button"
+                  onClick={() => { setPreviewUrl(''); setSelectedFile(null); }}
+                  style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    color: '#2C2C2C',
+                    border: '1px solid #CCCCCC',
+                    borderRadius: '50%',
+                    width: '34px',
+                    height: '34px',
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              /* Caixa de Seleção com Borda Tracejada e Ícone de Foto + Plus */
+              <label
+                style={{
+                  border: '1.5px dashed #D3D9CC',
+                  borderRadius: '18px',
+                  padding: '40px 20px',
+                  cursor: 'pointer',
+                  background: '#FAFBF9',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '12px',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {/* Ícone de foto com mais (+) */}
+                <div style={{ color: '#4A5646', marginBottom: '2px' }}>
+                  <ImagePlus size={44} strokeWidth={1.2} />
+                </div>
+
+                <div>
+                  <span style={{
+                    fontSize: '1.05rem',
+                    fontWeight: 500,
+                    color: '#2C2C2C',
+                    display: 'block',
+                    fontFamily: 'var(--font-body)'
+                  }}>
+                    Selecionar fotografias
+                  </span>
+                  <span style={{
+                    fontSize: '0.82rem',
+                    color: '#888888',
+                    marginTop: '4px',
+                    display: 'block'
+                  }}>
+                    ou arrasta aqui
+                  </span>
+                  <span style={{
+                    fontSize: '0.72rem',
+                    color: '#AAAAAA',
+                    marginTop: '8px',
+                    display: 'block'
+                  }}>
+                    JPG, PNG, HEIC • Máx. 50 MB por foto
+                  </span>
+                </div>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                />
+              </label>
+            )}
+
+            {/* Testes Rápidos sem Ficheiro */}
+            {!previewUrl && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '2px' }}>
+                <span style={{ fontSize: '0.72rem', color: '#999999' }}>Fotos teste:</span>
+                {sampleImages.map((s, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setPreviewUrl(s.url)}
+                    style={{
+                      padding: '4px 10px',
+                      borderRadius: '99px',
+                      fontSize: '0.72rem',
+                      background: '#F0F3EE',
+                      border: '1px solid #E0E5DC',
+                      color: '#4A5646',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Botão de Submissão Verde Oliva Sólido */}
+            <button
+              type="submit"
+              disabled={isUploading || (!selectedFile && !previewUrl)}
+              className="btn-gold"
+              style={{
+                width: '100%',
+                padding: '14px',
+                fontSize: '1rem',
+                borderRadius: '12px',
+                fontWeight: 500,
+                opacity: (!selectedFile && !previewUrl) && !isUploading ? 0.65 : 1,
+                cursor: (!selectedFile && !previewUrl) && !isUploading ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {isUploading ? (
+                <span>A enviar as fotografias...</span>
+              ) : (
+                <span>Enviar fotos</span>
+              )}
+            </button>
+
+          </form>
         </div>
       )}
 
-      {/* ═══ Feed de Fotos Enviadas ═══ */}
-      <div>
+      {/* ═══ FEED DE FOTOS ENVIADAS ═══ */}
+      <div id="gallery-feed" style={{ marginTop: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
           <h3 style={{
-            fontSize: '1.05rem',
-            fontWeight: 600,
+            fontSize: '1.15rem',
+            fontWeight: 500,
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            color: 'var(--text-primary)',
+            color: '#2C2C2C',
             fontFamily: 'var(--font-heading)'
           }}>
             <span className="live-dot" />
@@ -391,36 +408,37 @@ export const GuestView: FC = () => {
             style={{
               background: 'none',
               border: 'none',
-              color: 'var(--accent-gold)',
-              fontSize: '0.78rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              letterSpacing: '0.02em'
+              color: '#5E6E59',
+              fontSize: '0.82rem',
+              fontWeight: 500,
+              cursor: 'pointer'
             }}
           >
             Atualizar →
           </button>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {photos.length === 0 ? (
             <div
               className="glass-panel"
               style={{
-                padding: '40px 20px',
+                padding: '36px 20px',
                 textAlign: 'center',
-                color: 'var(--text-secondary)',
-                borderRadius: '20px'
+                color: '#777777',
+                borderRadius: '20px',
+                background: '#FFFFFF',
+                border: '1px solid #EAE8E3'
               }}
             >
-              <div style={{ color: 'var(--accent-gold)', opacity: 0.3, marginBottom: '12px', display: 'flex', justifyContent: 'center' }}>
-                <Camera size={36} strokeWidth={1} />
+              <div style={{ color: '#5E6E59', opacity: 0.5, marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>
+                <Camera size={32} strokeWidth={1.2} />
               </div>
-              <p style={{ fontSize: '0.9rem', fontFamily: 'var(--font-heading)', fontWeight: 500 }}>
+              <p style={{ fontSize: '0.95rem', fontFamily: 'var(--font-heading)', fontWeight: 500, color: '#333333' }}>
                 Ainda não há fotografias
               </p>
-              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                Tira a primeira foto acima!
+              <p style={{ fontSize: '0.8rem', color: '#999999', marginTop: '4px' }}>
+                Tira a primeira foto acima para partilhar!
               </p>
             </div>
           ) : (
@@ -428,9 +446,16 @@ export const GuestView: FC = () => {
               <div
                 key={photo.id}
                 className="glass-panel"
-                style={{ borderRadius: '20px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                style={{
+                  borderRadius: '20px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  background: '#FFFFFF',
+                  border: '1px solid #EAE8E3'
+                }}
               >
-                <div style={{ position: 'relative', width: '100%', height: '300px', background: 'var(--bg-dark)' }}>
+                <div style={{ position: 'relative', width: '100%', height: '300px', background: '#F5F4F0' }}>
                   <img
                     src={photo.url}
                     alt="Foto de Casamento"
@@ -444,27 +469,26 @@ export const GuestView: FC = () => {
                   alignItems: 'center',
                   justifyContent: 'space-between'
                 }}>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                  <span style={{ fontSize: '0.78rem', color: '#888888' }}>
                     Enviada às {photo.timestamp}
                   </span>
                   <button
                     onClick={() => handleLike(photo.id)}
                     style={{
-                      background: 'rgba(193, 108, 112, 0.08)',
-                      border: '1px solid rgba(193, 108, 112, 0.2)',
-                      color: '#C16C70',
+                      background: '#FDF2F2',
+                      border: '1px solid #F8D7D7',
+                      color: '#D9534F',
                       borderRadius: '99px',
                       padding: '6px 14px',
                       fontSize: '0.8rem',
-                      fontWeight: 600,
+                      fontWeight: 500,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '6px',
-                      transition: 'all 0.2s ease'
+                      gap: '6px'
                     }}
                   >
-                    <Heart size={15} fill="#C16C70" />
+                    <Heart size={15} fill="#D9534F" color="#D9534F" />
                     <span>{photo.likesCount || 0}</span>
                   </button>
                 </div>
@@ -473,26 +497,6 @@ export const GuestView: FC = () => {
           )}
         </div>
       </div>
-
-      {/* ═══ Link para galeria ═══ */}
-      {photos.length > 0 && (
-        <div style={{ textAlign: 'center', padding: '8px 0 20px' }}>
-          <button
-            onClick={loadPhotos}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--text-secondary)',
-              fontSize: '0.85rem',
-              fontWeight: 500,
-              cursor: 'pointer',
-              letterSpacing: '0.02em'
-            }}
-          >
-            Ver galeria →
-          </button>
-        </div>
-      )}
 
     </div>
   );
