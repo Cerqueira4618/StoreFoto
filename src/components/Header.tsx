@@ -11,11 +11,11 @@ interface HeaderProps {
 /* ── Ramo de Oliveira discreto ── */
 const OliveBranchIcon: FC<{ size?: number }> = ({ size = 24 }) => (
   <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M16 28 C16 28 16 6 16 4" stroke="#5E6E59" strokeWidth="1.5" strokeLinecap="round" />
-    <path d="M16 20 C12 18 9 14 8 10" stroke="#5E6E59" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-    <path d="M8 10 C8 10 11 12 14 14" stroke="#5E6E59" strokeWidth="1" strokeLinecap="round" />
-    <path d="M16 14 C20 12 22 8 22 5" stroke="#5E6E59" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-    <path d="M22 5 C22 5 19 8 17 10" stroke="#5E6E59" strokeWidth="1" strokeLinecap="round" />
+    <path d="M16 28 C16 28 16 6 16 4" stroke="var(--accent-gold)" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M16 20 C12 18 9 14 8 10" stroke="var(--accent-gold)" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+    <path d="M8 10 C8 10 11 12 14 14" stroke="var(--accent-gold)" strokeWidth="1" strokeLinecap="round" />
+    <path d="M16 14 C20 12 22 8 22 5" stroke="var(--accent-gold)" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+    <path d="M22 5 C22 5 19 8 17 10" stroke="var(--accent-gold)" strokeWidth="1" strokeLinecap="round" />
   </svg>
 );
 
@@ -37,11 +37,12 @@ export const Header: FC<HeaderProps> = ({ onOpenNetworkModal, theme, onToggleThe
           </div>
           <div>
             <h1 style={{
-              fontSize: '1.1rem',
-              fontWeight: 500,
+              fontSize: '1.15rem',
+              fontWeight: 600,
               margin: 0,
               fontFamily: 'var(--font-heading)',
-              color: '#2C2C2C'
+              color: 'var(--text-primary)',
+              letterSpacing: '0.01em'
             }}>
               {eventDetails.title}
             </h1>
@@ -60,13 +61,13 @@ export const Header: FC<HeaderProps> = ({ onOpenNetworkModal, theme, onToggleThe
           >
             {theme === 'dark' ? (
               <>
-                <Sun size={14} color="#8DA286" />
-                <span>Claro</span>
+                <Sun size={14} color="var(--accent-gold)" />
+                <span style={{ color: 'var(--text-primary)' }}>Claro</span>
               </>
             ) : (
               <>
-                <Moon size={14} color="#5E6E59" />
-                <span>Escuro</span>
+                <Moon size={14} color="var(--accent-gold)" />
+                <span style={{ color: 'var(--text-primary)' }}>Escuro</span>
               </>
             )}
           </button>
@@ -78,7 +79,7 @@ export const Header: FC<HeaderProps> = ({ onOpenNetworkModal, theme, onToggleThe
             title="Ver QR Code do Casamento"
             style={{ padding: '6px 10px', borderRadius: '99px' }}
           >
-            <QrCode size={15} color="#5E6E59" />
+            <QrCode size={15} color="var(--accent-gold)" />
           </button>
 
         </div>
